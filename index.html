@@ -397,6 +397,20 @@ function closeLightbox() {
   box.classList.remove('flex');
 }
 
+// ================= ESTADO CON MEMORIA =================
+const savedState = sessionStorage.getItem('mq_state');
+
+let mqState = savedState ? JSON.parse(savedState) : {
+  stage: 'nuevo',
+  interest: null,
+  intentCount: 0,
+  ctaShown: false
+};
+
+function saveState() {
+  sessionStorage.setItem('mq_state', JSON.stringify(mqState));
+}
+
 // ================= CHAT =================
 const chatLog = document.getElementById('chatLog');
 const input = document.getElementById('userInput');
