@@ -337,11 +337,10 @@ body{
 <div class="chat-box" id="chatBox">
   <div class="chat-log" id="chatLog"></div>
   <div class="chat-input">
-    <input type="text" id="userInput" placeholder="Escribe tu pregunta...">
+    <input type="text" id="userInput" placeholder="Soy MaxiBot Escribe tu pregunta...">
     <button onclick="sendMessage()">Enviar</button>
   </div>
 </div>
-
 <script>
 // ================= GALERÍA =================
 const galleryData = [
@@ -398,17 +397,135 @@ const chatLog = document.getElementById('chatLog');
 const input = document.getElementById('userInput');
 
 const triggers = {
-  precio: 'MaxiQueen OS: Los planes disponibles son Starter $49, Pro $99 y Elite $199 por mes.',
-  contacto: 'MaxiQueen OS: Puedes contactarnos vía WhatsApp, Instagram, Facebook o YouTube.',
-  onboarding: 'MaxiQueen OS: Vamos a organizar esto primero. ¿Quieres que te guíe paso a paso?',
-  comunidad: 'MaxiQueen OS: La Comunidad MAXIQUEEN es un espacio seguro con sesiones en vivo y seguimiento humano.'
+  ventas: {
+    planes: `
+Trabajamos con planes claros y sin letra pequeña.
+
+👑 Starter – $49/mes
+Orden inicial y estructura base.
+
+👑 Pro – $99/mes
+Sistema activo para crecer y vender.
+
+👑 Elite – $199/mes
+Acompañamiento prioritario y sistema completo.
+`,
+    costos: `
+Los costos reflejan acompañamiento real,
+no acceso a una herramienta vacía.
+`,
+    whatsapp: `
+El contacto principal es vía WhatsApp.
+Si el sistema detecta que necesitas humano,
+la conversación se escala.
+`
+  },
+
+  onboarding: {
+    onboarding: `
+El onboarding es el inicio real del sistema.
+Aquí se baja el ruido y se ordena el camino.
+`,
+    empezar: `
+Para empezar solo necesitas decisión,
+no experiencia técnica.
+`
+  },
+
+  soporte: {
+    contacto: `
+Puedes escribirnos por:
+📲 WhatsApp
+📸 Instagram
+📘 Facebook
+📺 YouTube
+`
+  },
+
+  comunidad: {
+    comunidad: `
+La Comunidad MaxiQueen es un espacio seguro
+para pensar, construir y sostener procesos.
+`
+  }
+};
+
+const keywordMap = {
+  // Ventas
+  ventas: triggers.ventas.planes,
+  negocio: triggers.ventas.costos,
+  precio: triggers.ventas.planes,
+  planes: triggers.ventas.planes,
+  costos: triggers.ventas.costos,
+
+  // Contacto
+  contacto: triggers.soporte.contacto,
+  whatsapp: triggers.soporte.contacto,
+  instagram: triggers.soporte.contacto,
+
+  // Onboarding
+  onboarding: triggers.onboarding.onboarding,
+  empezar: triggers.onboarding.empezar,
+  ayuda: triggers.onboarding.empezar,
+  proceso: triggers.onboarding.onboarding,
+
+  // Comunidad
+  comunidad: triggers.comunidad.comunidad,
+
+  // Humano
+  humano: 'MaxiQueen OS: He escalado tu consulta a un humano.',
+  asistencia: 'MaxiQueen OS: He escalado tu consulta a un humano.'
 };
 
 const phrases = [
+  // Filosofía base
   'MaxiQueen OS: Esto funciona mejor paso a paso.',
-  'MaxiQueen OS: Recuerda: el sistema piensa contigo, no por ti.',
   'MaxiQueen OS: Orden antes de automatizar.',
-  'MaxiQueen OS: No improvisamos, operamos.'
+  'MaxiQueen OS: No improvisamos, operamos.',
+  'MaxiQueen OS: Primero claridad, luego velocidad.',
+  'MaxiQueen OS: El sistema piensa contigo, no por ti.',
+
+  // Identidad MaxiQueen
+  'MaxiQueen OS: No somos una plataforma. Somos un sistema.',
+  'MaxiQueen OS: Aquí la tecnología no manda. Sirve.',
+  'MaxiQueen OS: No alojamos archivos. Alojamos decisiones.',
+  'MaxiQueen OS: Tu proyecto necesita estructura, no más herramientas.',
+  'MaxiQueen OS: El caos no se elimina, se ordena.',
+
+  // Onboarding y proceso
+  'MaxiQueen OS: Vamos a organizar esto primero.',
+  'MaxiQueen OS: Antes de ejecutar, entendemos.',
+  'MaxiQueen OS: Nada se activa sin pasar por el núcleo.',
+  'MaxiQueen OS: El onboarding no acelera, estabiliza.',
+  'MaxiQueen OS: No necesitas saberlo todo para empezar.',
+
+  // Acompañamiento humano
+  'MaxiQueen OS: Aquí no estás solo.',
+  'MaxiQueen OS: El acompañamiento es real.',
+  'MaxiQueen OS: Cuando el sistema no alcanza, escala al humano.',
+  'MaxiQueen OS: Las decisiones importantes no se automatizan.',
+  'MaxiQueen OS: El control siempre vuelve a ti.',
+
+  // Ventas y negocio
+  'MaxiQueen OS: Vender sin sistema es agotamiento.',
+  'MaxiQueen OS: La claridad también convierte.',
+  'MaxiQueen OS: Un negocio sin orden no escala.',
+  'MaxiQueen OS: Primero estructura, luego crecimiento.',
+  'MaxiQueen OS: No prometemos resultados mágicos.',
+
+  // Creatividad y contenido
+  'MaxiQueen OS: Tu historia también es infraestructura.',
+  'MaxiQueen OS: La creatividad sin orden se pierde.',
+  'MaxiQueen OS: El contenido también necesita sistema.',
+  'MaxiQueen OS: Crear es más fácil cuando hay estructura.',
+  'MaxiQueen OS: La identidad no se improvisa.',
+
+  // Cierre filosófico
+  'MaxiQueen OS: Menos ruido. Más criterio.',
+  'MaxiQueen OS: El sistema está vivo.',
+  'MaxiQueen OS: Pensar también es avanzar.',
+  'MaxiQueen OS: No corremos. Operamos.',
+  'MaxiQueen OS: Aquí se construye con conciencia.'
 ];
 
 function sendMessage() {
@@ -423,11 +540,12 @@ function sendMessage() {
   let response = phrases[Math.floor(Math.random() * phrases.length)];
   const text = userText.toLowerCase();
 
-  if (text.includes('precio') || text.includes('planes')) response = triggers.precio;
-  else if (text.includes('contacto') || text.includes('whatsapp') || text.includes('instagram')) response = triggers.contacto;
-  else if (text.includes('onboarding') || text.includes('activar sistema') || text.includes('ayuda')) response = triggers.onboarding;
-  else if (text.includes('comunidad')) response = triggers.comunidad;
-  else if (text.includes('humano') || text.includes('asistencia')) response = 'MaxiQueen OS: He escalado tu consulta a un humano.';
+for (const keyword in keywordMap) {
+  if (text.includes(keyword)) {
+    response = keywordMap[keyword];
+    break;
+  }
+}
 
   const botMsg = document.createElement('div');
   botMsg.textContent = response;
